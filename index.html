@@ -109,7 +109,7 @@
 					</section>
 				</section>
 				<section>
-					<h2>Digital Sound Processing</h2>
+					<h2>Digital Signal Processing</h2>
 					<h4>The traditional way</h4>
 					<section>
 						<pre><code data-trim class="language-scala">
@@ -170,14 +170,14 @@
 							<div class="fragment">
 								<pre><code data-trim class="language-scala">
 									def output: Pipe[F, Float, Nothing] =
-										_.chunkN(FRAMES_PER_BUFFER, allowFewer = false).foreach { chunk =>
+										_.chunkN(FRAMES_PER_BUFFER).foreach { chunk =>
+											val Chunk.ArraySlice(array, offset, length) =
+												chunk.toArraySlice
 											F.blocking {
-												val outputBuffer = new Array[Float](FRAMES_PER_BUFFER)
-												chunk.copyToArray(outputBuffer, 0)
 												functions.Pa_WriteStream(
 													stream = pStream,
-													buffer = outputBuffer.atUnsafe(0).toBytePointer,
-													frames = FRAMES_PER_BUFFER.toULong
+													buffer = array.atUnsafe(offset).toBytePointer,
+													frames = length.toULong
 												)
 												()
 											}
@@ -336,8 +336,8 @@
 									stream =>
 										for {
 											topic <- Stream.eval(ChunkedTopic[F, Float])
-											pedal1Output <- Stream.resource(topic.subscribeAwait(1).map(pedal1))
-											pedal2Output <- Stream.resource(topic.subscribeAwait(1).map(pedal2))
+											pedal1Output <- Stream.resource(topic.subscribeAwaitUnbounded.map(pedal1))
+											pedal2Output <- Stream.resource(topic.subscribeAwaitUnbounded.map(pedal2))
 											result <- (pedal1Output |+| pedal2Output)
 												.concurrently(stream.through(topic.publish))
 										} yield result
@@ -406,33 +406,6 @@
 							def delayLine[F[_]: Concurrent](time: Duration): Pedal[F] =
 								silence(time) ++ _
 						</code></pre>
-						<div class="fragment">
-							<pre><code data-trim class="language-scala">
-								def parallel[F[_]: Concurrent](pedal1: Pedal[F], pedal2: Pedal[F]): Pedal[F] =
-									stream =>
-										for {
-											topic <- Stream.eval(ChunkedTopic[F, Float])
-											throughPedal1 <- Stream.resource(topic.subscribeAwait(1).map(pedal1))
-											throughPedal2 <- Stream.resource(topic.subscribeAwait(1).map(pedal2))
-											result <- (throughPedal1 |+| throughPedal2)
-												.concurrently(stream.through(topic.publish))
-										} yield result
-							</code></pre>
-					</section>
-					<section>
-						<pre><code data-trim class="language-scala">
-							def buffered[F[_]: Concurrent](pedal: Pedal[F]): Pedal[F] = stream =>
-								Stream
-									.eval(ChunkedChannel.unbounded[F, Float])
-									.flatMap(channel =>
-										channel.stream
-											.through(pedal)
-											.concurrently(stream.through(channel.sendAll))
-									)
-
-							def delayLine[F[_]: Concurrent](time: Duration): Pedal[F] =
-								buffered(silence(time) ++ _)
-						</code></pre>
 					</section>
 					<section>
 						<div class="fig-and-code">
@@ -445,9 +418,9 @@
 									): Pedal[F] = stream =>
 										for {
 											topic <- Stream.eval(ChunkedTopic[F, Float])
-											outStream <- Stream.resource(topic.subscribeAwait(1))
+											outStream <- Stream.resource(topic.subscribeAwaitUnbounded)
 											feedbackStream <- Stream.resource(
-												topic.subscribeAwait(1).map(_.map(_ * repeatGain))
+												topic.subscribeAwaitUnbounded.map(_.map(_ * repeatGain))
 											)
 											out <- outStream
 												.concurrently(
@@ -527,7 +500,7 @@
 									.use(audioSuite =>
 										audioSuite.input
 											.through(
-												reverb.schroeder(predelayMillis = 30, decayMillis = 100, mix = 1)
+												reverb.schroeder(predelay = 30.millis, decay = 1.second, mix = 0.7)
 											)
 											.through(audioSuite.output)
 											.compile

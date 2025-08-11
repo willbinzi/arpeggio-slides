@@ -18,7 +18,7 @@
 			<div class="slides">
 				<section>
 					<h2>Scala and Arpeggio</h2>
-					<h4>Audio processing with scala native and fs2</h4>
+					<h4>Audio processing with Scala Native and FS2</h4>
 					<section>
 						<img src="dist/images/pedalboard/all.jpg">
 					</section>
@@ -123,7 +123,7 @@
 					</section>
 				</section>
 				<section>
-					<h2>fs2</h2>
+					<h2>FS2</h2>
 					<section><img src="dist/images/fs2-logo.png"></section>
 					<section>
 							<pre><code data-trim class="language-scala">
@@ -410,7 +410,7 @@
 					<section>
 						<div class="fig-and-code">
 							<img src="dist/images/schroeder/delay.png">
-							<div class="code-container">
+							<div class="code-container code-column">
 								<pre><code data-trim class="language-scala">
 									def echoStage[F[_]: Concurrent](
 											repeatGain: Float,
@@ -439,7 +439,7 @@
 					<section>
 						<div class="fig-and-code">
 							<img src="dist/images/schroeder/all-pass-boxed.png">
-							<div>
+							<div class="code-container code-column">
 								<pre><code data-trim class="language-scala">
 									def allPassStage[F[_]: Concurrent](
 											repeatGain: Float,
@@ -456,7 +456,7 @@
 					<section>
 						<div class="fig-and-code">
 							<img src="dist/images/schroeder/reverberator2-boxed.png" style="max-width:450px">
-							<div>
+							<div class="code-container code-column">
 								<pre><code data-trim class="language-scala">
 									def schroeder[F[_]: Concurrent](
 											predelay: Duration,
@@ -510,7 +510,7 @@
 					</section>
 				</section>
 				<section>
-					<h2>Link to the repo</h2>
+					<h2>Read the Code</h2>
 					<section>
 						<div style="height:480px">
 							<img src="dist/images/arpeggio-qr.png">

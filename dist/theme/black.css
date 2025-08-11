@@ -39,6 +39,18 @@ section.has-light-background, section.has-light-background h1, section.has-light
   --r-overlay-element-fg-color: 0, 0, 0;
 }
 
+img {
+  object-fit: contain;
+}
+
+.code-column {
+  margin: 2%
+}
+
+.code-column .code-wrapper {
+  width: 100%
+}
+
 .reveal-viewport {
   background: #191919;
   background-color: var(--r-background-color);

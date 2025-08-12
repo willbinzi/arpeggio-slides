@@ -208,6 +208,82 @@
 					</section>
 				</section>
 				<section>
+					<h4>Volume</h4>
+					<section data-transition="fade">
+						<img src="dist/images/pedalboard/LLM.png">
+					</section>
+					<section data-transition="fade">
+						<div style="height:480px;width:944px">
+							<canvas data-chart="line" >
+								<!--
+								{
+									"data": {
+										"labels": ["","","","","","","","","","","","","","","","","","","","","","","","","","",""],
+										"datasets":[
+											{
+												"data":[0, 0.38268343236, 0.70710678118, 0.92387953251, 1, 0.92387953251, 0.70710678118, 0.38268343236, 0, -0.38268343236, -0.70710678118, -0.92387953251, -1, -0.92387953251, -0.70710678118, -0.38268343236, 0, 0.38268343236, 0.70710678118, 0.92387953251, 1, 0.92387953251, 0.70710678118, 0.38268343236, 0, -0.38268343236, -0.70710678118],
+												"backgroundColor":"rgba(20,220,220,.8)",
+												"pointRadius": 0,
+												"tension": 0.45
+											}
+										]
+									},
+									"options": {
+										"plugins": {
+											"legend": {
+												"display": false
+											}
+										}
+									}
+								}
+								-->
+							</canvas>
+						</div>
+					</section>
+					<section data-transition="fade">
+						<div style="height:480px;width:944px">
+							<canvas data-chart="line" >
+								<!--
+								{
+									"data": {
+										"labels": ["","","","","","","","","","","","","","","","","","","","","","","","","","",""],
+										"datasets":[
+											{
+												"data":[0.0,0.19134171618,0.35355339059,0.461939766255,0.5,0.461939766255,0.35355339059,0.19134171618,0.0,-0.19134171618,-0.35355339059,-0.461939766255,-0.5,-0.461939766255,-0.35355339059,-0.19134171618,0.0,0.19134171618,0.35355339059,0.461939766255,0.5,0.461939766255,0.35355339059,0.19134171618,0.0,-0.19134171618,-0.35355339059],
+												"backgroundColor":"rgba(20,220,220,.8)",
+												"pointRadius": 0,
+												"tension": 0.45
+											}
+										]
+									},
+									"options": {
+										"plugins": {
+											"legend": {
+												"display": false
+											}
+										}
+									}
+								}
+								-->
+							</canvas>
+						</div>
+					</section>
+					<section>
+						<div>
+							<pre><code data-trim class="language-scala">
+								def adjustLevel[F[_]](gain: Float): Pedal[F] =
+									_.map(_ * gain)
+							</code></pre>
+						</div>
+						<div class="fragment">
+							<pre><code data-trim class="language-scala">
+								def sweep[F[_]](volumeControlStream: Stream[F, Float]): Pedal[F] =
+									_.zipWith(volumeControlStream)(_ * _)
+							</code></pre>
+						</div>
+					</section>
+				</section>
+				<section>
 					<h4>Overdrive</h4>
 					<section data-transition="fade">
 						<img src="dist/images/pedalboard/tumnus.png">
@@ -545,6 +621,10 @@
 						scales: {
 							x: {
 								ticks: false
+							},
+							y: {
+								min: -1,
+								max: 1,
 							}
 						}
 					},

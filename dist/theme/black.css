@@ -43,6 +43,11 @@ img {
   object-fit: contain;
 }
 
+.code-container {
+  display: flex;
+  align-items: center;
+}
+
 .code-column {
   margin: 2%
 }

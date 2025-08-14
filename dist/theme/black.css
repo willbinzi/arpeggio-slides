@@ -52,6 +52,10 @@ img {
   margin: 2%
 }
 
+.code-column * {
+  resize: auto;
+}
+
 .code-column .code-wrapper {
   width: 100%
 }

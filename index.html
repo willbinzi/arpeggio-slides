@@ -542,7 +542,7 @@
 										parallel(
 											identity,
 											parallel(
-												// Create 4 echo stages with slightly differing delays and gain factors
+												// Create 4 echo stages with slightly differing delays and gain
 												Seq(1f, 1.17f, 1.34f, 1.5f)
 													.map(predelay * _)
 													.map(t => echoStage(gain(decay, t), t)): _*

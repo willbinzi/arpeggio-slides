@@ -406,9 +406,9 @@
 								def parallel[F[_]: Concurrent](pedal1: Pedal[F], pedal2: Pedal[F]): Pedal[F] =
 									stream =>
 										for {
-											topic <- Stream.eval(ChunkedTopic[F, Float])
-											pedal1Output <- Stream.resource(topic.subscribeAwaitUnbounded.map(pedal1))
-											pedal2Output <- Stream.resource(topic.subscribeAwaitUnbounded.map(pedal2))
+											topic <- Stream.eval(UnthrottledChunkedTopic[F, Float])
+											pedal1Output <- Stream.resource(topic.subscribeAwait.map(pedal1))
+											pedal2Output <- Stream.resource(topic.subscribeAwait.map(pedal2))
 											result <- (pedal1Output |+| pedal2Output)
 												.concurrently(stream.through(topic.publish))
 										} yield result
@@ -422,8 +422,8 @@
 									threshold: Float
 							): Pedal[F] =
 								parallel(
-									_.map(_ * (1 - blend)),
-									symmetricClipping(threshold) andThen (_.map(_ * blend))
+									adjustLevel(1 - blend),
+									symmetricClipping(threshold) andThen adjustLevel(blend)
 								)
 						</code></pre>
 					</section>
@@ -458,8 +458,11 @@
 					<section>
 						<img src="dist/images/schroeder/paper.png">
 					</section>
-					<section>
+					<section data-transition="none-out">
 						<img src="dist/images/schroeder/reverberator2.png">
+					</section>
+					<section data-transition="none-in">
+						<img src="dist/images/schroeder/reverberator2-boxed.png">
 					</section>
 					<section data-transition="none-out">
 						<img src="dist/images/schroeder/delay.png">
@@ -488,10 +491,10 @@
 											delayTime: Duration
 									): Pedal[F] = stream =>
 										for {
-											topic <- Stream.eval(ChunkedTopic[F, Float])
-											outStream <- Stream.resource(topic.subscribeAwaitUnbounded)
+											topic <- Stream.eval(UnthrottledChunkedTopic[F, Float])
+											outStream <- Stream.resource(topic.subscribeAwait)
 											feedbackStream <- Stream.resource(
-												topic.subscribeAwaitUnbounded.map(_.map(_ * repeatGain))
+												topic.subscribeAwait.map(adjustLevel(repeatGain))
 											)
 											out <- outStream
 												.concurrently(
@@ -515,11 +518,12 @@
 									def allPassStage[F[_]: Concurrent](
 											repeatGain: Float,
 											delayTime: Duration
-									): Pedal[F] = parallel(
-										_.map(_ * -repeatGain),
-										echoStage(repeatGain, delayTime)
-											.andThen(_.map(_ * (1 - repeatGain * repeatGain)))
-									)
+									): Pedal[F] =
+										parallel(
+											adjustLevel(-repeatGain),
+											echoStage(repeatGain, delayTime)
+												.andThen(adjustLevel(1 - repeatGain * repeatGain))
+										)
 								</code></pre>
 							</div>
 						</div>
@@ -540,11 +544,11 @@
 												// Create 4 echo stages with slightly differing delays and gain
 												Seq(1f, 1.17f, 1.34f, 1.5f)
 													.map(predelay * _)
-													.map(t => echoStage(gain(decay, t), t)): _*
+													.map(t => echoRepeats(gain(decay, t), t)): _*
 											)
-												.andThen(allPassStage(0.7, 5.millis))
-												.andThen(allPassStage(0.7, 1700.micros))
-												.andThen(_.map(_ * mix))
+											.andThen(allPassStage(0.7, 5.millis))
+											.andThen(allPassStage(0.7, 1700.micros))
+											.andThen(adjustLevel(mix))
 										)
 								</code></pre>
 								<pre><code data-trim class="language-scala">

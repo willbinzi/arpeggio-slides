@@ -133,7 +133,7 @@
 								Pipe[F[_], Element, Element2] = Stream[F, Element] => Stream[F, Element2]
 							</code></pre>
 							<pre class="fragment"><code data-trim class="language-scala">
-								trait AudioSuite[F[_]] {
+								trait AudioInterface[F[_]] {
 									def input: Stream[F, Float]
 									def output: Pipe[F, Float, Nothing]
 								}
@@ -143,7 +143,7 @@
 				</section>
 				</section>
 				<section>
-					<h4>Implementing an AudioSuite</h4>
+					<h4>Implementing an AudioInterface</h4>
 					<section>
 						<div>
 							<div>
@@ -187,17 +187,17 @@
 						<pre><code data-trim class="language-scala">
 							package arpeggio
 	
-							import arpeggio.io.portaudio.PortAudioAudioSuite
+							import arpeggio.io.portaudio.PortAudioAudioInterface
 							import cats.effect.{IO, IOApp}
 	
 							object Main extends IOApp.Simple:
-								def run: IO[Unit] = PortAudioAudioSuite
+								def run: IO[Unit] = PortAudioAudioInterface
 									.resource[IO]
-									.use(audioSuite =>
-										audioSuite.input
+									.use(interface =>
+										interface.input
 											.through(somePedal)
 											.through(someOtherPedal)
-											.through(audioSuite.output)
+											.through(interface.output)
 											.compile
 											.drain
 									)
@@ -434,16 +434,16 @@
 						<pre><code data-trim class="language-scala">
 							package arpeggio
 
-							import arpeggio.io.portaudio.PortAudioAudioSuite
+							import arpeggio.io.portaudio.PortAudioAudioInterface
 							import cats.effect.{IO, IOApp}
 
 							object Main extends IOApp.Simple:
-								def run: IO[Unit] = PortAudioAudioSuite
+								def run: IO[Unit] = PortAudioAudioInterface
 									.resource[IO]
-									.use(audioSuite =>
-										audioSuite.input
+									.use(interface =>
+										interface.input
 											.through(pedals.overdrive.blended(blend = 0.8, threshold = 0.1))
-											.through(audioSuite.output)
+											.through(interface.output)
 											.compile
 											.drain
 									)
@@ -565,19 +565,19 @@
 						<pre><code data-trim class="language-scala">
 							package arpeggio
 
-							import arpeggio.io.portaudio.PortAudioAudioSuite
+							import arpeggio.io.portaudio.PortAudioAudioInterface
 							import arpeggio.pedals.reverb
 							import cats.effect.{IO, IOApp}
 
 							object Main extends IOApp.Simple:
-								def run: IO[Unit] = PortAudioAudioSuite
+								def run: IO[Unit] = PortAudioAudioInterface
 									.resource[IO]
-									.use(audioSuite =>
-										audioSuite.input
+									.use(interface =>
+										interface.input
 											.through(
 												reverb.schroeder(predelay = 30.millis, decay = 1.second, mix = 0.7)
 											)
-											.through(audioSuite.output)
+											.through(interface.output)
 											.compile
 											.drain
 									)

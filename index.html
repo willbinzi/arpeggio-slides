@@ -406,9 +406,9 @@
 								def parallel[F[_]: Concurrent](pedal1: Pedal[F], pedal2: Pedal[F]): Pedal[F] =
 									stream =>
 										for {
-											topic <- Stream.eval(ChunkedTopic[F, Float])
-											pedal1Output <- Stream.resource(topic.subscribeAwaitUnbounded.map(pedal1))
-											pedal2Output <- Stream.resource(topic.subscribeAwaitUnbounded.map(pedal2))
+											topic <- Stream.eval(UnthrottledChunkedTopic[F, Float])
+											pedal1Output <- Stream.resource(topic.subscribeAwait.map(pedal1))
+											pedal2Output <- Stream.resource(topic.subscribeAwait.map(pedal2))
 											result <- (pedal1Output |+| pedal2Output)
 												.concurrently(stream.through(topic.publish))
 										} yield result
@@ -491,10 +491,10 @@
 											delayTime: Duration
 									): Pedal[F] = stream =>
 										for {
-											topic <- Stream.eval(ChunkedTopic[F, Float])
-											outStream <- Stream.resource(topic.subscribeAwaitUnbounded)
+											topic <- Stream.eval(UnthrottledChunkedTopic[F, Float])
+											outStream <- Stream.resource(topic.subscribeAwait)
 											feedbackStream <- Stream.resource(
-												topic.subscribeAwaitUnbounded.map(adjustLevel(repeatGain))
+												topic.subscribeAwait.map(adjustLevel(repeatGain))
 											)
 											out <- outStream
 												.concurrently(

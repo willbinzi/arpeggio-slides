@@ -61,7 +61,12 @@ img {
 }
 
 .code-column .code-wrapper {
-  width: 100%
+  width: 100%;
+}
+
+.graph {
+  height: 50vh;
+  width: 65vw;
 }
 
 .reveal-viewport {

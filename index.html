@@ -371,7 +371,7 @@
 					</section>
 					<section>
 						<pre><code data-trim class="language-scala">
-							def symmetricClipping[F[_]](threshold: Float): Pedal[F] =
+							def symmetricHardClipping[F[_]](threshold: Float): Pedal[F] =
 								_.map(sample =>
 									Math.min(
 										Math.max(sample, -threshold),

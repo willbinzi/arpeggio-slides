@@ -385,46 +385,78 @@
 					<section>
 						<img src="dist/images/klon-listing.png">
 					</section>
+					<section>
+						<img src="dist/images/blended-overdrive.png">
+					</section>
 				</section>
 				<section>
 					<h4>Running pedals in parallel</h4>
 					<section>
-						<div>
-							<pre><code data-trim class="language-scala">
-								given pointwiseAdd[F[_]]: Semigroup[Stream[F, Float]] =
-									new:
-										def combine(
-												x: Stream[F, Float],
-												y: Stream[F, Float]
-										): Stream[F, Float] =
-											x.zipWith(y)(_ + _)
-							</code></pre>
+						<img src="dist/images/parallel-pedals.png">
+					</section>
+					<section data-auto-animate>
+						<div class="fig-and-code">
+							<img src="dist/images/parallel-pedals-join-highlighted.png" data-auto-animate-id="two">
+							<div class="code-column">
+								<pre><code data-trim class="language-scala">
+									given pointwiseAdd[F[_]]: Semigroup[Stream[F, Float]] =
+										new:
+											def combine(
+													x: Stream[F, Float],
+													y: Stream[F, Float]
+											): Stream[F, Float] =
+												x.zipWith(y)(_ + _)
+								</code></pre>
+							</div>
 						</div>
-						<div class="fragment">
-							<pre><code data-trim class="language-scala">
-								def parallel[F[_]: Concurrent](pedal1: Pedal[F], pedal2: Pedal[F]): Pedal[F] =
-									stream =>
+					</section>
+					<section data-auto-animate>
+						<div class="fig-and-code">
+							<img src="dist/images/parallel-pedals-topic-highlighted.png" data-auto-animate-id="two">
+							<div class="code-column">
+								<pre><code data-trim class="language-scala">
+									given pointwiseAdd[F[_]]: Semigroup[Stream[F, Float]] =
+										new:
+											def combine(
+													x: Stream[F, Float],
+													y: Stream[F, Float]
+											): Stream[F, Float] =
+												x.zipWith(y)(_ + _)
+								</code></pre>
+								<pre><code data-trim class="language-scala">
+									def parallel[F[_]: Concurrent](
+											pedal1: Pedal[F],
+											pedal2: Pedal[F]
+									): Pedal[F] = stream =>
 										for {
 											topic <- Stream.eval(UnthrottledChunkedTopic[F, Float])
-											pedal1Output <- Stream.resource(topic.subscribeAwait.map(pedal1))
-											pedal2Output <- Stream.resource(topic.subscribeAwait.map(pedal2))
+											pedal1Output <-
+												Stream.resource(topic.subscribeAwait.map(pedal1))
+											pedal2Output <-
+												Stream.resource(topic.subscribeAwait.map(pedal2))
 											result <- (pedal1Output |+| pedal2Output)
 												.concurrently(stream.through(topic.publish))
 										} yield result
-							</code></pre>
+								</code></pre>
+							</div>
 						</div>
 					</section>
 					<section>
-						<pre><code data-trim class="language-scala">
-							def blended[F[_]: Concurrent](
-									blend: Float,
-									threshold: Float
-							): Pedal[F] =
-								parallel(
-									adjustLevel(1 - blend),
-									symmetricClipping(threshold) andThen adjustLevel(blend)
-								)
-						</code></pre>
+						<div class="fig-and-code">
+							<img src="dist/images/blended-overdrive.png" data-auto-animate-id="two">
+							<div class="code-column">
+								<pre><code data-trim class="language-scala">
+									def blended[F[_]: Concurrent](
+											blend: Float,
+											threshold: Float
+									): Pedal[F] =
+										parallel(
+											adjustLevel(1 - blend),
+											symmetricClipping(threshold) andThen adjustLevel(blend)
+										)
+								</code></pre>
+							</div>
+						</div>
 					</section>
 				</section>
 				<section>
@@ -482,7 +514,7 @@
 					</section>
 					<section>
 						<div class="fig-and-code">
-							<img src="dist/images/schroeder/delay.png">
+							<img src="dist/images/schroeder/comb-filter-topic-highlighted.png">
 							<div class="code-container code-column">
 								<pre><code data-trim class="language-scala">
 									def echoStage[F[_]: Concurrent](
@@ -529,7 +561,7 @@
 					</section>
 					<section>
 						<div class="fig-and-code">
-							<img src="dist/images/schroeder/reverberator2-boxed.png" style="max-width:450px">
+							<img src="dist/images/schroeder/reverberator2-boxed.png">
 							<div class="code-column">
 								<pre><code data-trim class="language-scala">
 									def schroeder[F[_]: Concurrent](
@@ -540,7 +572,7 @@
 										parallel(
 											identity,
 											parallel(
-												// Create 4 echo stages with slightly differing delays and gain
+												// Create 4 echo stages with differing delays and gain
 												Seq(1f, 1.17f, 1.34f, 1.5f)
 													.map(predelay * _)
 													.map(t => echoRepeats(gain(decay, t), t)): _*

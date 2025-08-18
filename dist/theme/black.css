@@ -43,6 +43,10 @@ img {
   object-fit: contain;
 }
 
+.fig-and-code img {
+  max-width: 45% !important;
+}
+
 .code-container {
   display: flex;
   align-items: center;

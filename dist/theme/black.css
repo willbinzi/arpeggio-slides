@@ -64,11 +64,6 @@ img {
   width: 100%;
 }
 
-.graph {
-  height: 50vh;
-  width: 65vw;
-}
-
 .reveal-viewport {
   background: #191919;
   background-color: var(--r-background-color);

@@ -197,20 +197,25 @@
 							<img src="dist/images/charts/soft-clipping.png">
 						</div>
 					</section>
-					<section data-transition="fade">
+					<section data-transition="fade" data-auto-animate>
 						<div class="graph">
 							<img src="dist/images/charts/hard-clipping.png">
 						</div>
 					</section>
-					<section>
-						<pre><code data-trim class="language-scala">
-							def symmetricHardClipping[F[_]](threshold: Float): Pedal[F] =
-								_.map(sample =>
-									Math.min(
-										Math.max(sample, -threshold),
-										threshold)
-									)
-						</code></pre>
+					<section data-auto-animate>
+						<div class="fig-and-code">
+							<img src="dist/images/charts/hard-clipping.png">
+							<div class="code-column">
+								<pre><code data-trim class="language-scala">
+									def symmetricHardClipping[F[_]](threshold: Float): Pedal[F] =
+										_.map(sample =>
+											Math.min(
+												Math.max(sample, -threshold),
+												threshold)
+											)
+								</code></pre>
+							</div>
+						</div>
 					</section>
 					<section>
 						<img src="dist/images/pedalboard/tumnus.png">

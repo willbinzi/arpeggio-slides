@@ -229,12 +229,12 @@
 				</section>
 				<section>
 					<h4>Running pedals in parallel</h4>
-					<section>
-						<img src="dist/images/parallel-pedals.png">
+					<section data-auto-animate>
+						<img src="dist/images/parallel-pedals.png" data-id="parallel-pedals-diagram">
 					</section>
 					<section data-auto-animate>
 						<div class="fig-and-code">
-							<img src="dist/images/parallel-pedals-join-highlighted.png" data-auto-animate-id="two">
+							<img src="dist/images/parallel-pedals-join-highlighted.png" data-id="parallel-pedals-diagram">
 							<div class="code-column">
 								<pre><code data-trim class="language-scala">
 									given pointwiseAdd[F[_]]: Semigroup[Stream[F, Float]] =
@@ -250,7 +250,23 @@
 					</section>
 					<section data-auto-animate>
 						<div class="fig-and-code">
-							<img src="dist/images/parallel-pedals-topic-highlighted.png" data-auto-animate-id="two">
+							<img src="dist/images/parallel-pedals-split-highlighted.png" data-id="parallel-pedals-diagram">
+							<div class="code-column">
+								<pre><code data-trim class="language-scala">
+									given pointwiseAdd[F[_]]: Semigroup[Stream[F, Float]] =
+										new:
+											def combine(
+													x: Stream[F, Float],
+													y: Stream[F, Float]
+											): Stream[F, Float] =
+												x.zipWith(y)(_ + _)
+								</code></pre>
+							</div>
+						</div>
+					</section>
+					<section data-auto-animate>
+						<div class="fig-and-code">
+							<img src="dist/images/parallel-pedals-topic-highlighted.png" data-id="parallel-pedals-diagram">
 							<div class="code-column">
 								<pre><code data-trim class="language-scala">
 									given pointwiseAdd[F[_]]: Semigroup[Stream[F, Float]] =
@@ -281,7 +297,7 @@
 					</section>
 					<section>
 						<div class="fig-and-code">
-							<img src="dist/images/blended-overdrive.png" data-auto-animate-id="two">
+							<img src="dist/images/blended-overdrive.png">
 							<div class="code-column">
 								<pre><code data-trim class="language-scala">
 									def blended[F[_]: Concurrent](
@@ -379,10 +395,13 @@
 					<section>
 						<img src="dist/images/schroeder/reverberator-boxed.png">
 					</section>
-					<section>
+					<section data-transition="none-out">
 						<img src="dist/images/schroeder/all-pass.png">
 					</section>
-					<section>
+					<section data-transition="none-in" data-auto-animate>
+						<img src="dist/images/schroeder/all-pass-boxed.png">
+					</section>
+					<section data-auto-animate>
 						<div class="fig-and-code">
 							<img src="dist/images/schroeder/all-pass-boxed.png">
 							<div class="code-container code-column">
